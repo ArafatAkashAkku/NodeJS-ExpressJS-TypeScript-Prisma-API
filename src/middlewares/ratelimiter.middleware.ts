@@ -8,6 +8,7 @@ export const rateLimiter = rateLimit({
     success: false,
     message: 'Too many requests, please try again later.',
   },
+
   standardHeaders: true,
   legacyHeaders: false,
 });

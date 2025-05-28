@@ -19,7 +19,7 @@ const corsOptions: CorsOptions = {
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     } else {
-      isDevelopment && console.log(`CORS request from ${origin} rejected`); // Log rejected requests
+      if (isDevelopment) console.log(`CORS request from ${origin} rejected`); // Log rejected requests
       return callback(new Error('Not allowed by CORS'));
     }
   },

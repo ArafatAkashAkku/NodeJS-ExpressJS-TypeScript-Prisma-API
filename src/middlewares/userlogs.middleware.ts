@@ -1,14 +1,23 @@
 import { Request, Response, NextFunction } from 'express';
 import { isDevelopment } from '../utilities/app.utilities';
 
+interface User {
+  id: string;
+  email: string;
+  role?: string;
+  // Add other properties as needed
+}
+
 // Extend Express Request interface to include 'user' property
+/* eslint-disable @typescript-eslint/no-namespace */
 declare global {
   namespace Express {
     interface Request {
-      user?: any;
+      user?: User;
     }
   }
 }
+ 
 
 const SENSITIVE_FIELDS = [
   'password',
@@ -20,16 +29,37 @@ const SENSITIVE_FIELDS = [
   'accessToken',
 ];
 
-function sanitize(obj: any): any {
+// function sanitize(obj: any): any {
+//   if (!obj || typeof obj !== 'object') return obj;
+//   const clone: any = Array.isArray(obj) ? [] : {};
+//   for (const key in obj) {
+//     if (SENSITIVE_FIELDS.includes(key.toLowerCase())) {
+//       clone[key] = '***';
+//     } else {
+//       clone[key] = typeof obj[key] === 'object' ? sanitize(obj[key]) : obj[key];
+//     }
+//   }
+
+//   return clone;
+// }
+
+function sanitize(obj: unknown): unknown {
   if (!obj || typeof obj !== 'object') return obj;
-  const clone: any = Array.isArray(obj) ? [] : {};
-  for (const key in obj) {
+
+  const clone: Record<string, unknown> | unknown[] = Array.isArray(obj)
+    ? []
+    : {};
+
+  for (const key in obj as Record<string, unknown>) {
     if (SENSITIVE_FIELDS.includes(key.toLowerCase())) {
-      clone[key] = '***';
+      (clone as Record<string, unknown>)[key] = '***';
     } else {
-      clone[key] = typeof obj[key] === 'object' ? sanitize(obj[key]) : obj[key];
+      const value = (obj as Record<string, unknown>)[key];
+      (clone as Record<string, unknown>)[key] =
+        typeof value === 'object' && value !== null ? sanitize(value) : value;
     }
   }
+
   return clone;
 }
 
@@ -87,7 +117,7 @@ export const requestLogger = (
       },
     };
 
-    isDevelopment && console.log(JSON.stringify(log, null, 2));
+    if (isDevelopment) console.log(JSON.stringify(log, null, 2));
 
     // Optionally, you can save this log to a file or database here
   });
