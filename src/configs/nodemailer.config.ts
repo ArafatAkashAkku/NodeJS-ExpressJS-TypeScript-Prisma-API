@@ -33,12 +33,12 @@ export const transporter = nodemailer.createTransport({
 } as SMTPTransport.Options);
 
 // Optional: Verify connection on startup
-transporter.verify((error, success) => {
+transporter.verify((error) => {
   if (error) {
-    isDevelopment && console.log('Email server connection error:', error);
+    if (isDevelopment) console.log('Email server connection error:', error);
     return;
   } else {
-    isDevelopment && console.log('Email server is ready to send messages');
+    if (isDevelopment) console.log('Email server is ready to send messages');
     return;
   }
 });
@@ -70,7 +70,7 @@ export const sendEmail = async ({
 }: SendEmailOptions) => {
   // Validate required fields
   if (!to || !subject || !html) {
-    isDevelopment &&
+    if (isDevelopment)
       console.log('Missing required email fields: to, subject, or html');
     return;
   }
@@ -79,19 +79,19 @@ export const sendEmail = async ({
     const info = await transporter.sendMail({
       from: `"Your App Name" <${process.env.APP_SMTP_USER}>`,
       to,
-             subject,
+      subject,
       html,
       text,
-          cc,
+      cc,
       bcc,
       replyTo,
       attachments,
     });
 
-    isDevelopment && console.log('Email sent successfully:', info.messageId);
+    if (isDevelopment) console.log('Email sent successfully:', info.messageId);
     return info;
-  } catch (error: any) {
-    isDevelopment && console.log('Email sending failed:', error);
+  } catch (error) {
+    if (isDevelopment) console.log('Email sending failed:', error);
     return;
   }
 };
