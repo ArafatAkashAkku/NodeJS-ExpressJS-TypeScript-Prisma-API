@@ -17,7 +17,6 @@ declare global {
     }
   }
 }
- 
 
 const SENSITIVE_FIELDS = [
   'password',
@@ -29,34 +28,15 @@ const SENSITIVE_FIELDS = [
   'accessToken',
 ];
 
-// function sanitize(obj: any): any {
-//   if (!obj || typeof obj !== 'object') return obj;
-//   const clone: any = Array.isArray(obj) ? [] : {};
-//   for (const key in obj) {
-//     if (SENSITIVE_FIELDS.includes(key.toLowerCase())) {
-//       clone[key] = '***';
-//     } else {
-//       clone[key] = typeof obj[key] === 'object' ? sanitize(obj[key]) : obj[key];
-//     }
-//   }
-
-//   return clone;
-// }
-
-function sanitize(obj: unknown): unknown {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+function sanitize(obj: any): any {
   if (!obj || typeof obj !== 'object') return obj;
-
-  const clone: Record<string, unknown> | unknown[] = Array.isArray(obj)
-    ? []
-    : {};
-
-  for (const key in obj as Record<string, unknown>) {
+  const clone: any = Array.isArray(obj) ? [] : {};
+  for (const key in obj) {
     if (SENSITIVE_FIELDS.includes(key.toLowerCase())) {
-      (clone as Record<string, unknown>)[key] = '***';
+      clone[key] = '***';
     } else {
-      const value = (obj as Record<string, unknown>)[key];
-      (clone as Record<string, unknown>)[key] =
-        typeof value === 'object' && value !== null ? sanitize(value) : value;
+      clone[key] = typeof obj[key] === 'object' ? sanitize(obj[key]) : obj[key];
     }
   }
 

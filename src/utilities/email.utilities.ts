@@ -10,8 +10,8 @@ export const sampleEmailTemplate = async (to: string, name: string) => {
   `;
   try {
     await sendEmail({ to, subject, html });
-    isDevelopment && console.log('Welcome email sent');
+    if (isDevelopment) console.log('Welcome email sent');
   } catch (err) {
-    isDevelopment && console.log('Failed to send welcome email:', err);
+    if (isDevelopment) console.log('Failed to send welcome email:', err);
   }
 };

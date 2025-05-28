@@ -11,28 +11,32 @@ const cache = new NodeCache({
 });
 // Handle cache errors
 cache.on('error', (err) => {
-  isDevelopment && console.error('Cache error:', err);
+  if (isDevelopment) console.error('Cache error:', err);
 });
 // Handle cache hits
-cache.on('hit', (key, value) => {
-  isDevelopment && console.info(`Cache hit: ${key}`);
+cache.on('hit', (key) => {
+  if (isDevelopment) console.info(`Cache hit: ${key}`);
 });
 // Handle cache misses
 cache.on('miss', (key) => {
-  isDevelopment && console.info(`Cache miss: ${key}`);
+  if (isDevelopment) console.info(`Cache miss: ${key}`);
 });
 // Handle cache expiration
-cache.on('expired', (key, value) => {
-  isDevelopment && console.info(`Cache expired: ${key}`);
+cache.on('expired', (key) => {
+  if (isDevelopment) console.info(`Cache expired: ${key}`);
 });
 
 // Importing NodeCache from node-cache package
 // Get a value from the cache
-export const getCache = (key: string): any => {
+export const getCache = (key: string) => {
   return cache.get(key);
 };
 // Set a value in the cache
-export const setCache = (key: string, value: any, ttl?: number): boolean => {
+export const setCache = (
+  key: string,
+  value: unknown,
+  ttl?: number,
+): boolean => {
   if (ttl !== undefined) {
     return cache.set(key, value, ttl);
   }
@@ -59,13 +63,13 @@ export const delMultipleCache = (keys: string[]): number => {
   return cache.del(keys);
 };
 // Get multiple values from the cache
-export const getMultipleCache = (keys: string[]): any[] => {
+export const getMultipleCache = (keys: string[]) => {
   const resultObj = cache.mget(keys);
   return keys.map((key) => resultObj[key]);
 };
 // Set multiple values in the cache
 export const setMultipleCache = (
-  entries: Record<string, any>,
+  entries: Record<string, unknown>,
   ttl?: number,
 ): boolean => {
   const msetEntries = Object.entries(entries).map(([key, val]) =>
@@ -103,7 +107,8 @@ export const clearCacheWithPrefix = (prefix: string): void => {
   if (keysWithPrefix.length > 0) {
     cache.del(keysWithPrefix);
   } else {
-    isDevelopment && console.warn(`No cache keys found with prefix: ${prefix}`);
+    if (isDevelopment)
+      console.warn(`No cache keys found with prefix: ${prefix}`);
   }
 };
 // Clear the cache keys with a specific prefix
@@ -112,7 +117,8 @@ export const clearCacheKeysWithPrefix = (prefix: string): void => {
   if (keysWithPrefix.length > 0) {
     cache.del(keysWithPrefix);
   } else {
-    isDevelopment && console.warn(`No cache keys found with prefix: ${prefix}`);
+    if (isDevelopment)
+      console.warn(`No cache keys found with prefix: ${prefix}`);
   }
 };
 

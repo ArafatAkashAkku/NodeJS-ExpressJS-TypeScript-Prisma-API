@@ -51,7 +51,7 @@ if (isProduction && cluster.isPrimary) {
 
   // Listen for worker exit events and restart them
   // This ensures that if a worker crashes, a new one is spawned
-  cluster.on('exit', (worker, code, signal) => {
+  cluster.on('exit', (worker) => {
     console.warn(`⚠️ Worker ${worker.process.pid} died. Restarting...`);
     cluster.fork();
   });
