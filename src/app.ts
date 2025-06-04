@@ -8,8 +8,6 @@ import { rateLimiter } from './middlewares/ratelimiter.middleware';
 import { requestLogger } from './middlewares/userlogs.middleware';
 import statusMonitor from 'express-status-monitor';
 import demoRouter from './routes/demo.routes';
-import { isDevelopment } from './utilities/app.utilities';
-import { getCacheStats } from './utilities/cache.utilities';
 
 dotenv.config();
 
@@ -37,14 +35,6 @@ app.use(
 app.use(rateLimiter);
 app.use(requestLogger);
 app.use(statusMonitor({ path: API_START + '/status' }));
-
-// Log cache statistics in development mode
-if (isDevelopment) {
-  setInterval(() => {
-    const stats = getCacheStats();
-    console.info('Cache Stats:', stats);
-  }, 10000); // every 10 seconds
-}
 
 // APIs
 app.get('/', (req, res) => {

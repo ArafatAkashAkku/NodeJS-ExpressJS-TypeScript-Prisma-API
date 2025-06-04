@@ -66,7 +66,6 @@ export const requestLogger = (
     const deviceType = detectDeviceType(uaString);
 
     const log = {
-      timestamp: new Date().toISOString(),
       method: req.method,
       url: req.originalUrl,
       path: req.path,
@@ -95,6 +94,7 @@ export const requestLogger = (
         durationMs,
         memoryUsage: process.memoryUsage(),
       },
+      timestamp: new Date().toISOString(),
     };
 
     if (isDevelopment) console.log(JSON.stringify(log, null, 2));
