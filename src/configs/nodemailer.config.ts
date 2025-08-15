@@ -1,15 +1,25 @@
 import nodemailer from 'nodemailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
-import { isDevelopment, isProduction } from '../utilities/app.utilities';
+import {
+  appDkimPrivateKey,
+  appDomain,
+  appName,
+  appSMTPHost,
+  appSMTPPass,
+  appSMTPPort,
+  appSMTPUser,
+  isDevelopment,
+  isProduction,
+} from '../utilities/app.utilities';
 
 // Create transporter
 export const transporter = nodemailer.createTransport({
-  host: process.env.APP_SMTP_HOST, // e.g., smtp.gmail.com
-  port: Number(process.env.APP_SMTP_PORT) || 587,
-  secure: Number(process.env.APP_SMTP_PORT) === 465, // true for port 465, false otherwise
+  host: appSMTPHost,
+  port: Number(appSMTPPort),
+  secure: Number(appSMTPPort) === 465, // true for port 465, false otherwise
   auth: {
-    user: process.env.APP_SMTP_USER,
-    pass: process.env.APP_SMTP_PASS,
+    user: appSMTPUser,
+    pass: appSMTPPass,
   },
   tls: {
     rejectUnauthorized: isProduction, // Use true in production if you have valid certs
@@ -23,26 +33,28 @@ export const transporter = nodemailer.createTransport({
   logger: isDevelopment, // Log in development mode
   debug: isDevelopment, // Enable debug output in development mode
   dkim:
-    isProduction && process.env.APP_DKIM_PRIVATE_KEY
+    isProduction && appDkimPrivateKey
       ? {
-          domainName: process.env.APP_DOMAIN,
+          domainName: appDomain,
           keySelector: 'default',
-          privateKey: process.env.APP_DKIM_PRIVATE_KEY,
+          privateKey: appDkimPrivateKey,
         }
       : undefined,
 } as SMTPTransport.Options);
 
-// Optional: Verify connection on startup
-transporter.verify((error) => {
+// Verify connection on startup
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+transporter.verify((error: any) => {
   if (error) {
-    if (isDevelopment) console.log('Email server connection error:', error);
+    if (isDevelopment) console.log('Email server connection error\n', error);
     return;
   } else {
-    if (isDevelopment) console.log('Email server is ready to send messages');
+    if (isDevelopment) console.log('Email server is ready to send messages\n');
     return;
   }
 });
 
+// Send email
 interface SendEmailOptions {
   to: string;
   subject: string;
@@ -58,6 +70,7 @@ interface SendEmailOptions {
   }[];
 }
 
+// Send email
 export const sendEmail = async ({
   to,
   subject,
@@ -71,13 +84,13 @@ export const sendEmail = async ({
   // Validate required fields
   if (!to || !subject || !html) {
     if (isDevelopment)
-      console.log('Missing required email fields: to, subject, or html');
-    return;
+      console.log('Missing required email fields: to, subject, or html\n');
+    return; // prevent further execution
   }
 
   try {
     const info = await transporter.sendMail({
-      from: `"Your App Name" <${process.env.APP_SMTP_USER}>`,
+      from: `"${appName}" - <${appSMTPUser}>`,
       to,
       subject,
       html,
@@ -88,10 +101,10 @@ export const sendEmail = async ({
       attachments,
     });
 
-    if (isDevelopment) console.log('Email sent successfully:', info.messageId);
+    if (isDevelopment) console.log('Email sent successfully\n', info);
     return info;
   } catch (error) {
-    if (isDevelopment) console.log('Email sending failed:', error);
-    return;
+    if (isDevelopment) console.log('Email sending failed\n', error);
+    return; // prevent further execution
   }
 };

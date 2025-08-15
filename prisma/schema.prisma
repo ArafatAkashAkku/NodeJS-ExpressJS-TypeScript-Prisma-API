@@ -6,10 +6,13 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  // output   = "../src/generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql" // or mysql/sqlite/mongodb
+  provider = "mongodb" // or mysql/sqlite/mongodb/postgresql
   url      = env("APP_DATABASE_URL")
 }
+
+// Prisma schema for MongoDB (Prisma 5+)
+// datasource and generator definitions omitted for brevity

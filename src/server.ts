@@ -4,7 +4,11 @@ import dotenv from 'dotenv';
 import { initSocket } from './sockets';
 import cluster from 'cluster';
 import os from 'os';
-import { isProduction } from './utilities/app.utilities';
+import {
+  appBackendUrl,
+  isDevelopment,
+  isProduction,
+} from './utilities/app.utilities';
 import app from './app';
 
 // Load environment variables from .env file
@@ -58,6 +62,10 @@ if (isProduction && cluster.isPrimary) {
 } else {
   // start server
   server.listen(PORT, () => {
-    console.log(`Server is running on port http://localhost:${PORT}`);
+    if (isDevelopment) {
+      console.log(`Server is running on port http://localhost:${PORT}`);
+    } else {
+      console.log(`Server is running on ${appBackendUrl}`);
+    }
   });
 }

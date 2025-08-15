@@ -1,22 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { isDevelopment } from '../utilities/app.utilities';
-
-interface User {
-  id: string;
-  email: string;
-  role?: string;
-  // Add other properties as needed
-}
-
-// Extend Express Request interface to include 'user' property
-/* eslint-disable @typescript-eslint/no-namespace */
-declare global {
-  namespace Express {
-    interface Request {
-      user?: User;
-    }
-  }
-}
+// import prisma from '../prisma';
 
 const SENSITIVE_FIELDS = [
   'password',
@@ -60,7 +44,7 @@ export const requestLogger = (
 ) => {
   const start = Date.now();
 
-  res.on('finish', () => {
+  res.on('finish', async () => {
     const durationMs = Date.now() - start;
     const uaString = req.headers['user-agent'] || '';
     const deviceType = detectDeviceType(uaString);
@@ -88,18 +72,45 @@ export const requestLogger = (
       params: sanitize(req.params),
       cookies: sanitize(req.cookies),
       body: sanitize(req.body), // Assuming req.body exists and is an object
-      user: req.user ? sanitize(req.user) : undefined,
       responseHeaders: res.getHeaders(),
       performance: {
         durationMs,
-        memoryUsage: process.memoryUsage(),
+        memoryUsage: { ...process.memoryUsage() },
       },
-      timestamp: new Date().toISOString(),
+      success: res.statusCode >= 200 && res.statusCode < 400,
+      message:
+        res.statusMessage ||
+        (res.statusCode >= 200 && res.statusCode < 400
+          ? 'Success Request'
+          : 'Error Request'),
     };
 
     if (isDevelopment) console.log(JSON.stringify(log, null, 2));
-
-    // Optionally, you can save this log to a file or database here
+    // await prisma.logs.create({
+    //   data: {
+    //     method: log.method,
+    //     url: log.url,
+    //     path: log.path,
+    //     status: log.status,
+    //     ip: Array.isArray(log.ip) ? log.ip.join(', ') : log.ip,
+    //     protocol: log.protocol,
+    //     hostname: log.hostname,
+    //     httpVersion: log.httpVersion,
+    //     headers: log.headers,
+    //     userAgent: log.userAgent,
+    //     query: log.query,
+    //     params: log.params,
+    //     cookies: log.cookies,
+    //     body: log.body,
+    //     responseHeaders: log.responseHeaders,
+    //     performance: {
+    //       durationMs: log.performance.durationMs,
+    //       memoryUsage: { ...log.performance.memoryUsage },
+    //     },
+    //     success: log.success,
+    //     message: log.message,
+    //   },
+    // });
   });
 
   next();
