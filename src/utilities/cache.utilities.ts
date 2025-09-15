@@ -11,19 +11,19 @@ const cache = new NodeCache({
 });
 // Handle cache errors
 cache.on('error', (err) => {
-  if (isDevelopment) console.error('Cache error:', err);
+  if (isDevelopment) console.log('Cache error:', err);
 });
 // Handle cache hits
 cache.on('hit', (key) => {
-  if (isDevelopment) console.info(`Cache hit: ${key}`);
+  if (isDevelopment) console.log(`Cache hit: ${key}`);
 });
 // Handle cache misses
 cache.on('miss', (key) => {
-  if (isDevelopment) console.info(`Cache miss: ${key}`);
+  if (isDevelopment) console.log(`Cache miss: ${key}`);
 });
 // Handle cache expiration
 cache.on('expired', (key) => {
-  if (isDevelopment) console.info(`Cache expired: ${key}`);
+  if (isDevelopment) console.log(`Cache expired: ${key}`);
 });
 
 // Importing NodeCache from node-cache package
@@ -108,7 +108,7 @@ export const clearCacheWithPrefix = (prefix: string): void => {
     cache.del(keysWithPrefix);
   } else {
     if (isDevelopment)
-      console.warn(`No cache keys found with prefix: ${prefix}`);
+      console.log(`No cache keys found with prefix: ${prefix}`);
   }
 };
 // Clear the cache keys with a specific prefix
@@ -118,7 +118,7 @@ export const clearCacheKeysWithPrefix = (prefix: string): void => {
     cache.del(keysWithPrefix);
   } else {
     if (isDevelopment)
-      console.warn(`No cache keys found with prefix: ${prefix}`);
+      console.log(`No cache keys found with prefix: ${prefix}`);
   }
 };
 
