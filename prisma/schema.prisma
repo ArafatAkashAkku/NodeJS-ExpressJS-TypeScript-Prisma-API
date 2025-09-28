@@ -18,7 +18,7 @@ datasource db {
 // datasource and generator definitions omitted for brevity
 
 model Logs {
-  id String @id @default(mongoId())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
   method String?
   url String?
   path String?
