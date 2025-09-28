@@ -32,10 +32,10 @@ export const appSMTPUser =
 
 export const appSMTPPass = process.env.APP_SMTP_PASS?.trim() || 'password';
 
-export const appDkimPrivateKey =
-  process.env.APP_DKIM_PRIVATE_KEY?.trim() || 'example';
-
-export const appDomain = process.env.APP_DOMAIN?.trim() || 'example.com';
-
 export const appCookieSecret =
   process.env.APP_COOKIE_SECRET?.trim() || 'example';
+
+export const appPort = process.env.APP_PORT?.trim() || 3000;
+
+export const appCORSAllowedUrls = process.env.APP_CORS_ALLOWED_URLS || 'example.com';
+

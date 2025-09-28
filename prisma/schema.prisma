@@ -16,3 +16,27 @@ datasource db {
 
 // Prisma schema for MongoDB (Prisma 5+)
 // datasource and generator definitions omitted for brevity
+
+model Logs {
+  id String @id @default(mongoId())
+  method String?
+  url String?
+  path String?
+  status Int?
+  ip String?
+  protocol String?
+  hostname String?
+  httpVersion String?
+  headers String?
+  userAgent String?
+  query String?
+  params String?
+  cookies String?
+  body String?
+  responseHeaders String?
+  performance  Json?
+  success Boolean?
+  message String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

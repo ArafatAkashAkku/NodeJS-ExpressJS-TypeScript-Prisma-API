@@ -1,9 +1,9 @@
 import { CorsOptions } from 'cors';
-import { isDevelopment } from '../utilities/app.utilities';
+import { appCORSAllowedUrls, isDevelopment } from '../utilities/app.utilities';
 
 // Define the allowed origins for CORS
 // This can be set in the environment variables for flexibility
-const allowedOrigins = process.env.APP_CORS_ALLOWED_URLS?.split(',').map(
+const allowedOrigins = appCORSAllowedUrls.split(',').map(
   (url) => url.trim(),
 ) || ['*'];
 
@@ -13,10 +13,11 @@ const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
     if (!origin) {
       // Allow non-browser requests like curl or Postman
+      if (isDevelopment) console.log(`CORS request from ${origin} allowed`); // Log allowed requests
       return callback(null, true);
     }
-
     if (allowedOrigins.includes(origin)) {
+      if (isDevelopment) console.log(`CORS request from ${origin} allowed`); // Log allowed requests
       return callback(null, true);
     } else {
       if (isDevelopment) console.log(`CORS request from ${origin} rejected`); // Log rejected requests

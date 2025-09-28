@@ -10,25 +10,26 @@ const cache = new NodeCache({
   useClones: false, // Disable cloning to improve performance
 });
 // Handle cache errors
-cache.on('error', (err) => {
+cache.on('error', (err: Error) => {
   if (isDevelopment) console.log('Cache error:', err);
 });
 // Handle cache hits
-cache.on('hit', (key) => {
+cache.on('hit', (key: string) => {
   if (isDevelopment) console.log(`Cache hit: ${key}`);
 });
 // Handle cache misses
-cache.on('miss', (key) => {
+cache.on('miss', (key: string) => {
   if (isDevelopment) console.log(`Cache miss: ${key}`);
 });
 // Handle cache expiration
-cache.on('expired', (key) => {
+cache.on('expired', (key: string) => {
   if (isDevelopment) console.log(`Cache expired: ${key}`);
 });
 
 // Importing NodeCache from node-cache package
 // Get a value from the cache
 export const getCache = (key: string) => {
+  if (isDevelopment) console.log(`Cache get: ${key}`);
   return cache.get(key);
 };
 // Set a value in the cache
@@ -38,33 +39,41 @@ export const setCache = (
   ttl?: number,
 ): boolean => {
   if (ttl !== undefined) {
+    if (isDevelopment) console.log(`Cache set: ${key}`);
     return cache.set(key, value, ttl);
   }
+  if (isDevelopment) console.log(`Cache set: ${key}`);
   return cache.set(key, value);
 };
 // Delete a value from the cache
 export const delCache = (key: string): number => {
+  if (isDevelopment) console.log(`Cache delete: ${key}`);
   return cache.del(key);
 };
 // Get all keys in the cache
 export const getAllCacheKeys = (): string[] => {
+  if (isDevelopment) console.log(`Cache keys: ${cache.keys()}`);
   return cache.keys();
 };
 // Clear the cache
 export const clearCache = (): void => {
+  if (isDevelopment) console.log(`Cache cleared`);
   cache.flushAll();
 };
 // Check if a key exists in the cache
 export const hasCache = (key: string): boolean => {
+  if (isDevelopment) console.log(`Cache has: ${key}`);
   return cache.has(key);
 };
 // Delete multiple keys from the cache
 export const delMultipleCache = (keys: string[]): number => {
+  if (isDevelopment) console.log(`Cache delete multiple: ${keys}`);
   return cache.del(keys);
 };
 // Get multiple values from the cache
 export const getMultipleCache = (keys: string[]) => {
   const resultObj = cache.mget(keys);
+  if (isDevelopment) console.log(`Cache get multiple: ${resultObj}`);
   return keys.map((key) => resultObj[key]);
 };
 // Set multiple values in the cache
@@ -75,23 +84,28 @@ export const setMultipleCache = (
   const msetEntries = Object.entries(entries).map(([key, val]) =>
     ttl !== undefined ? { key, val, ttl } : { key, val },
   );
+  if (isDevelopment) console.log(`Cache set multiple: ${msetEntries}`);
   return cache.mset(msetEntries);
 };
 // Get the number of keys in the cache
 export const getCacheSize = (): number => {
+  if (isDevelopment) console.log(`Cache size: ${cache.keys().length}`);
   return cache.keys().length;
 };
 // Get the cache statistics
 export const getCacheStats = (): NodeCache.Stats => {
+  if (isDevelopment) console.log(`Cache stats: ${cache.getStats()}`);
   return cache.getStats();
 };
 // Reset the TTL of a key
 export const resetCacheTTL = (key: string, ttl: number): boolean => {
+  if (isDevelopment) console.log(`Cache reset TTL: ${key}`);
   return cache.ttl(key, ttl);
 };
 // Get the TTL of a key
 export const getCacheTTL = (key: string): number | undefined => {
   const ttl = cache.getTtl(key);
+  if (isDevelopment) console.log(`Cache TTL: ${ttl}`);
   return typeof ttl === 'number'
     ? Math.floor((ttl - Date.now()) / 1000)
     : undefined;
@@ -99,12 +113,14 @@ export const getCacheTTL = (key: string): number | undefined => {
 // Get the cache keys with a specific prefix
 export const getCacheKeysWithPrefix = (prefix: string): string[] => {
   const allKeys = cache.keys();
+  if (isDevelopment) console.log(`Cache keys with prefix: ${allKeys}`);
   return allKeys.filter((key) => key.startsWith(prefix));
 };
 // Clear the cache keys with a specific prefix
 export const clearCacheWithPrefix = (prefix: string): void => {
   const keysWithPrefix = getCacheKeysWithPrefix(prefix);
   if (keysWithPrefix.length > 0) {
+    if (isDevelopment) console.log(`Cache clear with prefix: ${prefix}`);
     cache.del(keysWithPrefix);
   } else {
     if (isDevelopment)
@@ -115,6 +131,7 @@ export const clearCacheWithPrefix = (prefix: string): void => {
 export const clearCacheKeysWithPrefix = (prefix: string): void => {
   const keysWithPrefix = getCacheKeysWithPrefix(prefix);
   if (keysWithPrefix.length > 0) {
+    if (isDevelopment) console.log(`Cache clear with prefix: ${prefix}`);
     cache.del(keysWithPrefix);
   } else {
     if (isDevelopment)

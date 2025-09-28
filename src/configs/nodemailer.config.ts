@@ -1,8 +1,6 @@
 import nodemailer from 'nodemailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import {
-  appDkimPrivateKey,
-  appDomain,
   appName,
   appSMTPHost,
   appSMTPPass,
@@ -32,24 +30,16 @@ export const transporter = nodemailer.createTransport({
   greetingTimeout: 5000,
   logger: isDevelopment, // Log in development mode
   debug: isDevelopment, // Enable debug output in development mode
-  dkim:
-    isProduction && appDkimPrivateKey
-      ? {
-          domainName: appDomain,
-          keySelector: 'default',
-          privateKey: appDkimPrivateKey,
-        }
-      : undefined,
 } as SMTPTransport.Options);
 
 // Verify connection on startup
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 transporter.verify((error: any) => {
   if (error) {
-    if (isDevelopment) console.log('Email server connection error\n', error);
+    if (isDevelopment) console.log('Email server connection error', error);
     return;
   } else {
-    if (isDevelopment) console.log('Email server is ready to send messages\n');
+    if (isDevelopment) console.log('Email server is ready to send messages');
     return;
   }
 });
@@ -84,7 +74,7 @@ export const sendEmail = async ({
   // Validate required fields
   if (!to || !subject || !html) {
     if (isDevelopment)
-      console.log('Missing required email fields: to, subject, or html\n');
+      console.log('Missing required email fields: to, subject, or html');
     return; // prevent further execution
   }
 
@@ -101,10 +91,12 @@ export const sendEmail = async ({
       attachments,
     });
 
-    if (isDevelopment) console.log('Email sent successfully\n', info);
+    if (isDevelopment) console.log('Email sent successfully', info);
     return info;
-  } catch (error) {
-    if (isDevelopment) console.log('Email sending failed\n', error);
+  } 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  catch (error: any) {
+    if (isDevelopment) console.log('Email sending failed', error);
     return; // prevent further execution
   }
 };

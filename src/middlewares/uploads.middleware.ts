@@ -15,6 +15,7 @@ function getFileName(originalName: string): string {
   const timestamp = Date.now();
   const ext = path.extname(originalName);
   const baseName = path.basename(originalName, ext);
+  if (isDevelopment) console.log(`File name: ${baseName}-${timestamp}${ext}`);
   return `${baseName}-${timestamp}${ext}`;
 }
 
@@ -28,10 +29,12 @@ function saveFileToDisk(
   const targetDir = path.join(baseUploadDir, folder); // use folder subdirectory if provided
 
   if (!fs.existsSync(targetDir)) {
+    if (isDevelopment) console.log(`Target directory: ${targetDir}`);
     fs.mkdirSync(targetDir, { recursive: true });
   }
 
   const fullPath = path.join(targetDir, filename);
+  if (isDevelopment) console.log(`Full path: ${fullPath}`);
   fs.writeFileSync(fullPath, file.buffer);
   return fullPath;
 }
@@ -44,6 +47,7 @@ export const uploadMiddleware = (fieldName: string) => {
         if (isDevelopment) console.log(`Upload error: ${err.message}`);
         return res.status(400).json({ error: 'Upload failed' });
       }
+      if (isDevelopment) console.log(`Upload success: ${req.file?.filename}`);
       next(); // move to your controller, where you conditionally save the file
     });
   };
@@ -57,6 +61,7 @@ export const uploadMultipleMiddleware = (fieldName: string) => {
         if (isDevelopment) console.log(`Upload error: ${err.message}`);
         return res.status(400).json({ error: 'Upload failed' });
       }
+      if (isDevelopment) console.log(`Upload success: ${req.files?.length}`);
       next();
     });
   };
@@ -72,6 +77,7 @@ export const uploadFieldsMiddleware = (
         if (isDevelopment) console.log(`Upload error: ${err.message}`);
         return res.status(400).json({ error: 'Upload failed' });
       }
+      if (isDevelopment) console.log(`Upload success: ${req.files?.length}`);
       next();
     });
   };
@@ -83,6 +89,7 @@ export const saveUploadedFile = (
   folder: string = '',
 ): string => {
   const filename = getFileName(file.originalname);
+  if (isDevelopment) console.log(`Saving file: ${filename}`);
   saveFileToDisk(file, filename, folder);
   return filename;
 };
@@ -93,8 +100,23 @@ export const saveUploadedFiles = (
 ): string[] => {
   return files.map((file) => {
     const filename = getFileName(file.originalname);
+    if (isDevelopment) console.log(`Saving file: ${filename}`);
     saveFileToDisk(file, filename, folder);
     return filename;
+  });
+};
+
+export const deleteUploadedFile = (filename: string, folder: string = '') => {
+  const baseUploadDir = path.join(__dirname, '../uploads');
+  const targetDir = path.join(baseUploadDir, folder); // use folder subdirectory if provided
+  const fullPath = path.join(targetDir, filename);
+  if (isDevelopment) console.log(`Deleting file: ${fullPath}`);
+  fs.unlinkSync(fullPath);
+};
+
+export const deleteUploadedFiles = (filenames: string[], folder: string = '') => {
+  filenames.forEach((filename) => {
+    deleteUploadedFile(filename, folder);
   });
 };
 

@@ -6,6 +6,8 @@ import cluster from 'cluster';
 import os from 'os';
 import {
   appBackendUrl,
+  appPort,
+  appCORSAllowedUrls,
   isDevelopment,
   isProduction,
 } from './utilities/app.utilities';
@@ -15,12 +17,12 @@ import app from './app';
 dotenv.config();
 
 // Validate environment variables
-const PORT = process.env.APP_PORT || 5000;
+const PORT = appPort;
 
 // Create the HTTP server
 const server = http.createServer(app);
 
-const allowedOrigins = process.env.APP_CORS_ALLOWED_URLS?.split(',').map(
+const allowedOrigins = appCORSAllowedUrls.split(',').map(
   (url) => url.trim(),
 ) || ['*'];
 // Initialize WebSocket server with validation and restrictions
@@ -56,7 +58,7 @@ if (isProduction && cluster.isPrimary) {
   // Listen for worker exit events and restart them
   // This ensures that if a worker crashes, a new one is spawned
   cluster.on('exit', (worker) => {
-    console.warn(`⚠️ Worker ${worker.process.pid} died. Restarting...`);
+    console.log(`⚠️ Worker ${worker.process.pid} died. Restarting...`);
     cluster.fork();
   });
 } else {

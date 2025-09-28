@@ -7,9 +7,11 @@ cron.schedule('*/10 * * * *', async () => {
   try {
     if (isDevelopment) console.log('Cron job started - requesting API');
     const response = await axios.get(appBackendUrl + '/');
-    if (isDevelopment) console.log('API Response\n', response.data);
-  } catch (error) {
-    if (isDevelopment) console.error('Cron job error\n', error);
+    if (isDevelopment) console.log('Cron job started - API Response', response.data);
+  } 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  catch (error: any) {
+    if (isDevelopment) console.log('Cron job error - API Response', error.message);
   }
 });
 

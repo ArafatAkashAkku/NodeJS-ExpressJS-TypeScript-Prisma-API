@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { isDevelopment } from '../utilities/app.utilities';
-// import prisma from '../prisma';
+import prisma from '../prisma';
 
 const SENSITIVE_FIELDS = [
   'password',
@@ -86,31 +86,31 @@ export const requestLogger = (
     };
 
     if (isDevelopment) console.log(JSON.stringify(log, null, 2));
-    // await prisma.logs.create({
-    //   data: {
-    //     method: log.method,
-    //     url: log.url,
-    //     path: log.path,
-    //     status: log.status,
-    //     ip: Array.isArray(log.ip) ? log.ip.join(', ') : log.ip,
-    //     protocol: log.protocol,
-    //     hostname: log.hostname,
-    //     httpVersion: log.httpVersion,
-    //     headers: log.headers,
-    //     userAgent: log.userAgent,
-    //     query: log.query,
-    //     params: log.params,
-    //     cookies: log.cookies,
-    //     body: log.body,
-    //     responseHeaders: log.responseHeaders,
-    //     performance: {
-    //       durationMs: log.performance.durationMs,
-    //       memoryUsage: { ...log.performance.memoryUsage },
-    //     },
-    //     success: log.success,
-    //     message: log.message,
-    //   },
-    // });
+    await prisma.logs.create({
+      data: {
+        method: log.method,
+        url: log.url,
+        path: log.path,
+        status: log.status,
+        ip: Array.isArray(log.ip) ? log.ip.join(', ') : log.ip,
+        protocol: log.protocol,
+        hostname: log.hostname,
+        httpVersion: log.httpVersion,
+        headers: log.headers,
+        userAgent: log.userAgent,
+        query: log.query,
+        params: log.params,
+        cookies: log.cookies,
+        body: log.body,
+        responseHeaders: log.responseHeaders,
+        performance: {
+          durationMs: log.performance.durationMs,
+          memoryUsage: { ...log.performance.memoryUsage },
+        },
+        success: log.success,
+        message: log.message,
+      },
+    });
   });
 
   next();
